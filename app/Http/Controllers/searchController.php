@@ -121,9 +121,6 @@ $class = trim($classs); // Remove any leading/trailing whitespace, including \r 
 //oldddddddd
    
  
-    
-
-
 
 // filter displayed data basedOn (awp or netprofit)
 public function searchDrug(Request $request)
@@ -133,14 +130,9 @@ public function searchDrug(Request $request)
     $normalizedNDC = str_replace('-', '', trim($request->input('ndc')));
     $normalizedInsurance = trim($request->input('insurance'));
 
-    // Validate inputs
-  //  if (!$normalizedDrugName || !$normalizedNDC || !$normalizedInsurance) {
-    //    return back()->withErrors('Missing required inputs for search.');
-    //}
+   
     $class = Script::where('Drug_Name', $request->drug_name)
               ->where('Ins', $request->insurance)
-           //  ->where('NDC', str_replace('-', '', $request->ndc))
-              // ->where('NDC', $request->ndc)
               ->distinct()
               ->pluck('Class')
               ->first();
@@ -150,8 +142,6 @@ $dclass=Drug::where('drug_name', $request->drug_name)
 ->distinct()     
 ->pluck('drug_class')    
 ->first();               
-
-//$class = trim($classs);
 
     // Base query for Scripts
     $scriptQuery = Script::where('Class', $class)
@@ -167,23 +157,15 @@ $dclass=Drug::where('drug_name', $request->drug_name)
   }); 
 
 
-       // ->where('Ins', $normalizedInsurance);
-
     // Apply sorting
     if ($request->has('sort_by')) {
         $sortBy = $request->input('sort_by');
         if ($sortBy === 'net_profit_desc') {
             $scriptQuery = $scriptQuery->sortByDesc(function ($item) {
-                return $item->Net_Profit;
+                return $item->Net_profit;   
             });
 
         } elseif ($sortBy === 'awp_asc') {
-/*
-            $scriptQuery = Drug::where('drug_class', $dclass)
-            ->orWhere('ndc', $request->ndc);
-
-            $scriptQuery= $scriptQuery->orderBy('awp', 'asc')->distinct()->get();
-*/
             $scriptQuery = Drug::where('drug_class', $dclass)
     ->orWhere('ndc', $request->ndc)
     ->select('drug_class', 'drug_name', 'ndc', 'form', 'strength', 'rxCUI','awp', 'mfg', 'rxcui', 'acq') // Specify columns
@@ -193,8 +175,6 @@ $dclass=Drug::where('drug_name', $request->drug_name)
         
         }
     }
-    // Execute the query
-    //$scriptData = $scriptQuery->get();
 
     // Return the results to the view
     return view('filteredData', [
@@ -207,235 +187,12 @@ $dclass=Drug::where('drug_name', $request->drug_name)
     ]);
 }
 
+
 //oldddddddd
 
-/*
-public function search(Request $request)
-{
-    $normalizedNDC = str_replace('-', '', $request->ndc);
-
-    // Step 1: Fetch the selected drug data from the `scripts` table (latest date)
-    $selectedDrugData = Script::where('Drug_Name', $request->drug_name)
-        ->where('Ins', $request->insurance)
-        ->where('NDC', $normalizedNDC)
-        ->distinct()
-        ->get()
-        ->groupBy(function ($item) {
-            return $item['Drug_Name'] . '-' . $item['Ins'] . '-' . $item['NDC'];
-        })
-        ->map(function ($group) {
-            return $group->sortByDesc('Date')->first();
-        });
-
-    // Step 2: Retrieve the Class for the drug (from `scripts` or fallback to `drugs`)
-    $class = Script::where('Drug_Name', $request->drug_name)
-        ->where('Ins', $request->insurance)
-        ->pluck('Class')
-        ->first();
-
-    if (!$class) {
-        $class = Drug::where('drug_name', $request->drug_name)
-            ->where('ndc', $normalizedNDC)
-            ->pluck('drug_class')
-            ->first();
-    }
-
-    $class = trim($class); // Clean up whitespace
-
-    // Step 3: Fetch alternatives from the `scripts` table
-    $alternativesFromScripts = Script::where('Class', $class)
-        ->where('Ins', $request->insurance)
-        ->where('NDC', '!=', $normalizedNDC)
-        ->distinct()
-        ->get()
-        ->groupBy(function ($item) {
-            return $item['Drug_Name'] . '-' . $item['Ins'] . '-' . $item['NDC'];
-        })
-        ->map(function ($group) {
-            return $group->sortByDesc('Date')->first();
-        });
-
-    // Step 4: Fallback to fetching alternatives from the `drugs` table if no scripts found
-    $alternativesFromDrugs = collect();
-  //  if ($alternativesFromScripts->isEmpty()) {
-        $alternativesFromDrugs = Drug::where('drug_class', $class)
-            ->distinct()
-            ->get();
-    //}
-
-    // Step 5: Fetch data for the requested drug from `drugs` table
-    $drugData = Drug::where('drug_name', $request->drug_name)
-        ->where('ndc', $normalizedNDC)
-        ->distinct()
-        ->get();
-
-    // Step 6: Return all results to the view
-    return view('drugResult', [
-        'data' => $selectedDrugData,
-        'drug_data' => $drugData,
-        'request' => $request,
-        'script' => $alternativesFromScripts,
-        'class' => $class,
-        'drugs' => $alternativesFromDrugs,
-    ]);
-}
-*/
 
 
-/* very good
-public function search(Request $request)
-{
-    $normalizedNDC = $request->ndc ? str_replace('-', '', $request->ndc) : null;
-    //dd($normalizedNDC);
-    // إذا لم يتم إدخال NDC
-    if (!$normalizedNDC)
-     {
-        // Step 1: Fetch all data from `scripts` based on `Drug_Name` and `Insurance`
-        $dataFromScripts = Script::where('Drug_Name', $request->drug_name)
-            ->where('Ins', $request->insurance)
-            ->distinct()
-            ->get()
-            ->groupBy(function ($item) {
-                return $item['Drug_Name'] . '-' . $item['Ins'] . '-' . $item['NDC'];
-            })
-            ->map(function ($group) {
-                return $group->sortByDesc(function ($item) {
-                    return strtotime($item['Date']); // Convert the Date to a timestamp for reliable comparison
-                })->first();
-            });
-        // Step 2: Fetch all data from `drugs` based on `Drug_Name`
-        $dataFromDrugs = Drug::where('drug_name', $request->drug_name)
-            ->distinct()
-            ->get();
 
-            //alts
-            $class = Script::where('Drug_Name', $request->drug_name)
-            ->where('Ins', $request->insurance)
-            ->pluck('Class')
-            ->first();
-    
-        $class = trim($class);
-    
-        $class2 = Drug::where('drug_name', $request->drug_name)
-           // ->where('Ins', $request->insurance)
-            ->pluck('drug_class')
-            ->first();
-    
-        $alternativesFromScripts = Script::where('Class', $class)
-            ->where('Ins', $request->insurance)
-          //  ->where('NDC', '!=', $normalizedNDC)
-            ->distinct()
-            ->get()
-            ->groupBy(function ($item) {
-                return $item['Drug_Name'] . '-' . $item['Ins'];
-            })
-            ->map(function ($group) {
-                return $group->sortByDesc('Date')->first();
-            });
-    
-        $alternativesFromDrugs = collect();
-       // if ($alternativesFromScripts->isEmpty()) {
-            $alternativesFromDrugs = Drug::where('drug_class', $class2)
-                ->distinct()
-                ->get();
-               // dd($cl);
-    
-        //}
-    
-        $drugData = Drug::where('drug_name', $request->drug_name)
-           // ->where('ndc', $normalizedNDC)
-            ->distinct()
-            ->get();
-        // Step 3: Return the data to the view
-          return view('drugResult', [
-            'data' => $dataFromScripts,
-           // 'drug_data' => $dataFromDrugs,
-            'request' => $request,
-            'script' => $alternativesFromScripts,
-            'class' => $class,
-            'drugs' => $alternativesFromDrugs,
-        ]);
-    }
-    // إذا تم إدخال NDC
-    $selectedDrugData = Script::where('Drug_Name', $request->drug_name)
-         ->where('NDC', $normalizedNDC)   
-        ->where('Ins', $request->insurance)
-        ->distinct()
-        ->get()
-        ->groupBy(function ($item) {
-            return $item['Drug_Name'] . '-' . $item['Ins'] . '-' . $item['NDC'];
-        })
-        ->map(function ($group) {
-            // Sort by Date in descending order (newest first) and get the first record
-            return $group->sortByDesc(function ($item) {
-                return strtotime($item['Date']); // Convert the Date to a timestamp for reliable comparison
-            })->first();
-        });
-
-        $data=Script::where('Drug_Name', $request->drug_name)
-        ->where('Ins', $request->insurance)
-        ->where('NDC', 'LIKE', '%' . $normalizedNDC . '%')
-        // ->distinct()
-         ->get();
- // dd($data);
-
-
-    $class = Script::where('Drug_Name', $request->drug_name)
-        ->where('Ins', $request->insurance)
-        ->pluck('Class')
-        ->first();
-
-    if (!$class) {
-        $class = Drug::where('drug_name', $request->drug_name)
-            ->where('ndc', $normalizedNDC)
-            ->pluck('drug_class')
-            ->first();
-    }
-
-    $class = trim($class);
-
-    $class2 = Drug::where('drug_name', $request->drug_name)
-       // ->where('Ins', $request->insurance)
-        ->pluck('drug_class')
-        ->first();
-
-    $alternativesFromScripts = Script::where('Class', $class)
-        ->where('Ins', $request->insurance)
-        ->where('NDC', '!=', $normalizedNDC)
-        ->distinct()
-        ->get()
-        ->groupBy(function ($item) {
-            return $item['Drug_Name'] . '-' . $item['Ins'] . '-' . $item['NDC'];
-        })
-        ->map(function ($group) {
-            return $group->sortByDesc('Date')->first();
-        });
-
-    $alternativesFromDrugs = collect();
-   // if ($alternativesFromScripts->isEmpty()) {
-        $alternativesFromDrugs = Drug::where('drug_class', $class2)
-            ->distinct()
-            ->get();
-           // dd($cl);
-
-    //}
-
-    $drugData = Drug::where('drug_name', $request->drug_name)
-        ->orwhere('ndc', $normalizedNDC)
-        ->distinct()
-        ->get();
-
-    return view('drugResult', [
-        'data' => $selectedDrugData,
-        'drug_data' => $drugData,
-        'request' => $request,
-        'script' => $alternativesFromScripts,
-        'class' => $class,
-        'drugs' => $alternativesFromDrugs,
-       // 'ndc'=>$normalizedNDC ?? 'ndc'=>''
-    ]);
-}
-*/
 
 public function search(Request $request)
 {
