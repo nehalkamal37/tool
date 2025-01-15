@@ -22,7 +22,7 @@
                 <div class="signin-content">
                     <div class="signin-image">
                         <figure><img src="{{ asset('auth/images/signin-image.jpg')}}" alt="sing up image"></figure>
-                        <a href="{{ route('register')}}" class="signup-image-link">Create an account</a>
+                        <a href="{{ route('welcome')}}" class="signup-image-link">Go Home</a>
                     </div>
 
                     <div class="signin-form">

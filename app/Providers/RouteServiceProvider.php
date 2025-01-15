@@ -17,7 +17,7 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @var string
      */
-    public const HOME = '/home';
+    public const HOME = '/tool';
 
     /**
      * Define your route model bindings, pattern filters, and other route configuration.
@@ -43,20 +43,22 @@ protected function redirectTo($request)
     if (Auth::check()) {
         $role = Auth::user()->role; // Fetch user's role
 
-      /*  switch ($role) {
+        switch ($role) {
             case 'pharmacist':
-                return '/pharmacist/dashboard';
+                return redirect()->route('tool'); // Fallback route
             case 'administrator':
-                return '/pharmacist/dashboard';
-            case 'technician':
+                return redirect()->route('dash'); // Fallback route
+
+            /*case 'technician':
                 return '/technician/dashboard';
             case 'inventory_manager':
                 return '/inventory/dashboard';
+                */
             default:
                 return self::HOME; // Default fallback for unknown roles
         }
 
-        */
+        
     }
 
     return '/login'; // Redirect to login if not authenticated

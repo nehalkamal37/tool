@@ -92,9 +92,12 @@ Route::get('/dashboard', function () {
 Route::get('/dash', [DashboardController::class, 'index'])->middleware('auth')->name('dash');
 
 Route::middleware(['auth'])->group(function () {
-Route::get('/home', [DrugController::class, 'showSearchPage'])->name('home'); // view search page
+Route::get('/tool', [DrugController::class, 'showSearchPage'])->name('tool'); // view search page
 });
 
-
+//home route
+Route::view('/welcome','home.index')->name('welcome');
+Route::view('/contact','home.contact')->name('contact');
+Route::view('/about','home.about')->name('about');
 
 require __DIR__.'/auth.php';
