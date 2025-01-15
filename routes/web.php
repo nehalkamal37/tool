@@ -24,8 +24,7 @@ use App\Http\Controllers\dashboard\scriptsController;
 */
 
 Route::get('/', function () {
-    return redirect()->route('register');
-    //view('welcome');
+    return view('home.index');
 });
     Route::get('search',[DrugController::class,'index'])->name('searchPage');   //used to show data in json format
     Route::match(['get', 'post'],'searchDrug',[searchController::class,'search'])->name('search');  //this is the used method to handle search

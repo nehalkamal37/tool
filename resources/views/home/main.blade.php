@@ -136,7 +136,7 @@
 </head>
 <body>
   <nav class="navbar">
-    <div class="navbar-logo">PHARMATIVE</div>
+    <div class="navbar-logo">PHARMACY</div>
     <ul class="navbar-menu">
       <li><a href="{{ route('welcome')}}" class="active">Home</a></li>
       <li><a href="#">Store</a></li>
@@ -163,28 +163,5 @@
 @yield('content')
 
 
-    <div style="max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; padding: 0 15px;">
-      
-      <!-- About Section -->
-      <div style="flex: 1; min-width: 250px; margin-bottom: 20px;">
-        <h3 style="color: #28a745; margin-bottom: 15px;">About <span style="color: #000;">Pharmative</span></h3>
-        <p style="color: #666; line-height: 1.6;">
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eius quae reiciendis distinctio
-          voluptates sed dolorem excepturi iure eaque, aut unde.
-        </p>
-      </div>
-      
-      <!-- Navigation Section -->
-      <div style="flex: 1; min-width: 200px; margin-bottom: 20px;">
-        <h3 style="color: #000; margin-bottom: 15px;">Navigation</h3>
-        <ul style="list-style: none; padding: 0; margin: 0; color: #666;">
-          <li style="margin-bottom: 10px;"><a href="#" style="text-decoration: none; color: #666;">Supplements</a></li>
-          <li style="margin-bottom: 10px;"><a href="#" style="text-decoration: none; color: #666;">Vitamins</a></li>
-          <li style="margin-bottom: 10px;"><a href="#" style="text-decoration: none; color: #666;">Diet & Nutrition</a></li>
-          <li><a href="#" style="text-decoration: none; color: #666;">Tea & Coffee</a></li>
-        </ul>
-      </div>
-      
-   
-  </footer>
+    
   
