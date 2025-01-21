@@ -114,6 +114,6 @@ Route::resource('system', userController::class)->names([
 
 //contact route
 Route::post('/contact',[ContactController::class,'send'])->name('contact');
-Route::get('/contact',[ContactController::class,'all'])->name('contacts');
+Route::get('/contacts',[ContactController::class,'all'])->name('contacts');
 Route::delete('/contact/{id}',[ContactController::class,'delete'])->name('contact.destroy');
 require __DIR__.'/auth.php';
