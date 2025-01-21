@@ -44,6 +44,8 @@ class AuthenticatedSessionController extends Controller
               //  return redirect()->route('pharmacist.dashboard');
             case 'administrator':
                 return redirect()->route('dash');
+                case 'manager':
+                    return redirect()->route('dash');
             default:
                 return redirect()->route('tool'); // Fallback route
         }

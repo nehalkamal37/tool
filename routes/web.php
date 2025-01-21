@@ -5,6 +5,7 @@ use App\Http\Controllers\NDCController;
 use App\Http\Controllers\DrugController;
 use App\Http\Controllers\searchController;
 use App\Http\Controllers\streamController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\pharmacistController;
@@ -99,4 +100,20 @@ Route::view('/welcome','home.index')->name('welcome');
 Route::view('/contact','home.contact')->name('contact');
 Route::view('/about','home.about')->name('about');
 
+
+//users route
+Route::resource('system', userController::class)->names([
+    'index' => 'dashboard.users.index',
+    'create' => 'dashboard.users.create',
+    'store' => 'dashboard.users.store',
+    'show' => 'dashboard.users.show',
+    'edit' => 'dashboard.users.edit',
+    'update' => 'dashboard.users.update',
+    'destroy' => 'dashboard.users.destroy',
+]);
+
+//contact route
+Route::post('/contact',[ContactController::class,'send'])->name('contact');
+Route::get('/contact',[ContactController::class,'all'])->name('contacts');
+Route::delete('/contact/{id}',[ContactController::class,'delete'])->name('contact.destroy');
 require __DIR__.'/auth.php';

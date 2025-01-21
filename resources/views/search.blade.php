@@ -22,8 +22,16 @@
         <link href="{{asset('searchPage/css/main.css')}}" rel="stylesheet" />
       
 </head>
+@if(auth()->user()->role == 'pharmacist')
+<form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: ">
+    @csrf
+  <a class="nav-link text-dark" href="">
+    <button type="submit" class="btn btn-dark w-10">Logout </button>
+  </a>
+</form>
+@else
 <a href="{{route('dash')}}" class="btn btn-secondary w-10">Dashboard</a>
-
+@endif
 <style>
     body {
         display: flex;

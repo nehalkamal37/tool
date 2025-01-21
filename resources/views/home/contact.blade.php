@@ -96,15 +96,16 @@
 <body>
   <div class="form-container">
     <h1>Contact Us</h1>
-    <form>
+    <form method="POST" action="{{ route('contact') }}">
+      @csrf
       <div class="form-group">
         <div>
           <label for="first-name">First Name <span class="required">*</span></label>
-          <input type="text" id="first-name" name="first-name" placeholder="First Name" required>
+          <input type="text" id="first-name" name="fname" placeholder="First Name" required>
         </div>
         <div>
           <label for="last-name">Last Name <span class="required">*</span></label>
-          <input type="text" id="last-name" name="last-name" placeholder="Last Name" required>
+          <input type="text" id="last-name" name="lname" placeholder="Last Name" required>
         </div>
       </div>
       <div class="form-group single">
@@ -112,12 +113,16 @@
         <input type="email" id="email" name="email" placeholder="Email" required>
       </div>
       <div class="form-group single">
+        <label for="">Phone <span class="required">*</span></label>
+        <input type="" id="email" name="phone" placeholder="Phone" required>
+      </div>
+      <div class="form-group single">
         <label for="subject">Subject</label>
         <input type="text" id="subject" name="subject" placeholder="Subject">
       </div>
       <div class="form-group single">
         <label for="message">Message</label>
-        <textarea id="message" name="message" placeholder="Message"></textarea>
+        <textarea id="message" name="msg" placeholder="Message"></textarea>
       </div>
       <button type="submit" class="submit-btn">Send Message</button>
     </form>

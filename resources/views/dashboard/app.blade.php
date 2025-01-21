@@ -74,24 +74,35 @@
             <span class="nav-link-text ms-1">Scripts Tables</span>
           </a>
         </li>
+        @if(auth()->user()->role == 'manager')
         <li class="nav-item">
           <a class="nav-link text-dark" href="{{ route('searchPage')}}">
             <i class="material-symbols-rounded opacity-5">receipt_long</i>
             <span class="nav-link-text ms-1">Search Page</span>
           </a>
         </li>
+        @endif
         <li class="nav-item">
           <a class="nav-link text-dark" href="{{ route('dash')}}">
             <i class="material-symbols-rounded opacity-5">receipt_long</i>
             <span class="nav-link-text ms-1">Billing</span>
           </a>
         </li>
+        @if(auth()->user()->role == 'administrator')
         <li class="nav-item">
-          <a class="nav-link text-dark" href="{{ route('dash')}}">
-            <i class="material-symbols-rounded opacity-5">view_in_ar</i>
-            <span class="nav-link-text ms-1">Virtual Reality</span>
+          <a class="nav-link active bg-gradient-dark text-white" href="{{ route('dashboard.users.index')}}">
+            <i class="material-symbols-rounded opacity-5">table_view</i>
+            <span class="nav-link-text ms-1">users Tables</span>
           </a>
         </li>
+
+        <li class="nav-item">
+          <a class="nav-link text-dark" href="{{ route('contacts')}}">
+            <i class="material-symbols-rounded opacity-5">receipt_long</i>
+            <span class="nav-link-text ms-1">Contacts</span>
+          </a>
+        </li>
+        @endif
         <li class="nav-item">
           <a class="nav-link text-dark" href="{{ route('dash')}}">
             <i class="material-symbols-rounded opacity-5">format_textdirection_r_to_l</i>
