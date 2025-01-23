@@ -139,8 +139,7 @@
     <div class="navbar-logo">PHARMACY</div>
     <ul class="navbar-menu">
       <li><a href="{{ route('welcome')}}" class="active">Home</a></li>
-      <li><a href="#">Store</a></li>
-      <li><a href="#">Products</a></li>
+    
       <li><a href="{{route('about')}}">About</a></li>
       <li><a href="{{route('contact')}}">Contact</a></li>
     </ul>
