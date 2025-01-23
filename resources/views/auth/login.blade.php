@@ -21,7 +21,7 @@
             <div class="container">
                 <div class="signin-content">
                     <div class="signin-image">
-                        <figure><img src="{{ asset('auth/images/signin-image.jpg')}}" alt="sing up image"></figure>
+                        <figure><img src="{{ asset('auth/images/The Role of Pharmacists in Healthcare Systems.jpg')}}"  style="height: 277px; width:355px" alt="sing up image"></figure>
                         <a href="{{ route('welcome')}}" class="signup-image-link">Go Home</a>
                     </div>
 

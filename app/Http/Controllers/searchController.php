@@ -215,9 +215,12 @@ public function search(Request $request)
 
        
     $alternativesFromDrugs = Drug::where('drug_class', $class2)
+    ->where('drug_name', '!=', $request->drug_name)
     ->select('drug_class', 'drug_name', 'ndc', 'form', 'strength', 'rxCUI','acq','awp', 'mfg', 'rxcui') // Exclude 'id' or other columns you don't care about
     ->distinct()
     ->get();
+
+   
 
         return view('drugResult', [
             'data' => collect(),
@@ -262,6 +265,9 @@ public function search(Request $request)
 
         $alternativesFromScripts = Script::where('Class', $class)
             ->where('Ins', $request->insurance)
+            ->where('NDC', '!=', $normalizedNDC)
+            ->where('Drug_Name', '!=', $request->drug_name)  
+         // ->select('Drug_Name', 'Ins', 'NDC', 'Date', 'Class', 'Net_profit', 'RxCUI') // Exclude 'id' or other columns you don't care about
             ->distinct()
             ->get()
             ->groupBy(function ($item) {
@@ -272,7 +278,7 @@ public function search(Request $request)
             });
 
             $alternativesFromDrugs = Drug::where('drug_class', $class2)
-            ->select('drug_class', 'drug_name', 'ndc', 'form', 'strength', 'rxCUI','acq','awp', 'mfg', 'rxcui') // Exclude 'id' or other columns you don't care about
+            ->select('drug_class', 'drug_name', 'ndc', 'form', 'strength', 'rxCUI','acq','awp', 'mfg') // Exclude 'id' or other columns you don't care about
             ->distinct()
             ->get();
 
@@ -321,6 +327,7 @@ public function search(Request $request)
     $alternativesFromScripts = Script::where('Class', $class)
         ->where('Ins', $request->insurance)
         ->where('NDC', '!=', $normalizedNDC)
+        ->where('Drug_Name', '!=', $request->drug_name)
         ->distinct()
         ->get()
         ->groupBy(function ($item) {

@@ -5,144 +5,148 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search Results</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        h2, h3, h5 {
+            color: #343a40;
+        }
+        table th, table td {
+            vertical-align: middle;
+        }
+        .btn-back {
+            margin-bottom: 20px;
+        }
+        .alert-warning {
+            background-color: #fff3cd;
+            border-color: #ffeeba;
+        }
+        .table thead th {
+            background-color: #343a40;
+            color: #fff;
+        }
+    </style>
 </head>
 <body>
 <div class="container mt-5">
-    <h2 class="mb-4">Search Results</h2>
+    <h2 class="mb-4 text-center">Search Results</h2>
     @if($data->isEmpty())
-    <div class="alert alert-warning" role="alert">
-        No insurance data available for {{$request->drug_name}} with NDC {{$request->ndc}}
+        <div class="alert alert-warning text-center" role="alert">
+            No insurance data available for <strong>{{ $request->drug_name }}</strong> with NDC <strong>{{ $request->ndc }}</strong>.
+        </div>
+    @endif
+    <a href="{{ route('searchPage') }}" class="btn btn-secondary btn-back">Go Back</a>
+    
+    <!-- Table for Main Search Results -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead class="table-dark">
+                <tr>
+                    @if($data && count($data) > 0)
+                        <th>Drug Name</th>
+                        <th>Ins Results</th>
+                        <th>NDC Results</th>
+                        <th>Class</th>
+                        <th>Date</th>
+                        <th>Script</th>
+                        <th>Net Profit</th>
+                        <th>ACQ</th>
+                        <th>QTY</th>
+                        <th>INS PAY</th>
+                        <th>pat_pay</th>
+        
+                    @elseif(isset($drug_data) && count($drug_data) > 0)
+                        <th>Drug Name</th>
+                        <th>NDC</th>               
+                     <th>Class</th>
+                        <th>Form</th>
+                        <th>Strength</th>
+                        <th>Manufacturer</th>
+                        <th>Acquisition Cost</th>
+                    @else
+                        <th colspan="5" class="text-center">No Data Available</th>
+                    @endif
+                </tr>
+            </thead>
+            <tbody>
+                @if($data && count($data) > 0)
+                    @foreach ($data as $item)
+                        <tr>
+        
+                            <td>{{ $request->drug_name }}</td>
+                            <td>{{ $request->insurance }}</td>
+                            <td>
+                                <a href="https://ndclist.com/ndc/{{ $item->NDC }}" 
+                                   target="_blank" 
+                                   class="ndc-link" 
+                                   data-ndc="{{ $item->NDC }}">
+                                    {{ $item->NDC }}
+                                </a>
+                            </td>
+                            
+                            <td>{{ $class }}</td>
+                            <td>
+                                {{  \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $item->Date)->format('m/d/Y')}}</td>                    <td>{{ $item->Script }}</td>
+                            <td>{{ $item->Net_profit }}</td>
+                            <td>{{ $item->ACQ }}</td>
+                            <td>{{ $item->Qty }}</td>
+                            <td>{{ $item->Ins_Pay }}</td>
+                            <td>{{ $item->Pat_Pay }}</td>
+        
+        
+                        </tr>
+                    @endforeach
+                @elseif(isset($drug_data) && count($drug_data) > 0)
+                    @foreach ($drug_data as $item)
+                        <tr>
+                            <td>{{ $request->drug_name }}</td>
+                           
+                            <td style="white-space: nowrap;">
+                                    
+                                @php
+                                    // Remove hyphens from the NDC
+                                    $ndcWithoutHyphens = str_replace('-', '', $item->ndc); // e.g., 70156-0111-18 -> 70156011118
+                                    $mainNdc = substr($ndcWithoutHyphens, 0, 9); // Extract first 9 digits for the main NDC
+                                    $fullNdc = $ndcWithoutHyphens; // Use the full NDC for the package
+                                @endphp
+                                <a 
+                                href="https://ndclist.com/ndc/{{ $fullNdc }}"
+                                target="_blank">
+                                    {{ $fullNdc }}
+                                </a>
+                            
+                            
+                            
+                        </td>
+                                                
+                                    
+                            
+                            <td>{{ $item->drug_class }}</td>
+                            <td>{{ $item->form }}</td>
+                            <td>{{ $item->strength }}</td>
+                            <td>{{ $item->mfg }}</td>
+                            <td>{{ $item->acq }}</td>
+                        </tr>
+                    @endforeach
+                @else
+                    <tr>
+                        <td colspan="5" class="text-center">No Data Available</td>
+                    </tr>
+                @endif
+            </tbody>
+        </table>
     </div>
 
-    @endif
-<a href="{{route('searchPage')}}"><button > Go Back</button></a>
-<table class="table table-bordered table-striped">
-    <thead class="table-dark">
-        <tr>
-            @if($data && count($data) > 0)
-                <th>Drug Name</th>
-                <th>Ins Results</th>
-                <th>NDC Results</th>
-                <th>Class</th>
-                <th>Date</th>
-                <th>Script</th>
-                <th>Net Profit</th>
-                <th>ACQ</th>
-                <th>QTY</th>
-                <th>INS PAY</th>
-                <th>pat_pay</th>
 
-            @elseif(isset($drug_data) && count($drug_data) > 0)
-                <th>Drug Name</th>
-                <th>NDC</th>               
-             <th>Class</th>
-                <th>Form</th>
-                <th>Strength</th>
-                <th>Manufacturer</th>
-                <th>Acquisition Cost</th>
-            @else
-                <th colspan="5" class="text-center">No Data Available</th>
-            @endif
-        </tr>
-    </thead>
-    <tbody>
-        @if($data && count($data) > 0)
-            @foreach ($data as $item)
-                <tr>
-
-                    <td>{{ $request->drug_name }}</td>
-                    <td>{{ $request->insurance }}</td>
-                    <td>{{ $item->NDC }}</td>
-                    <td>{{ $class }}</td>
-                    <td>
-                        {{  \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $item->Date)->format('m/d/Y')}}</td>                    <td>{{ $item->Script }}</td>
-                    <td>{{ $item->Net_profit }}</td>
-                    <td>{{ $item->ACQ }}</td>
-                    <td>{{ $item->Qty }}</td>
-                    <td>{{ $item->Ins_Pay }}</td>
-                    <td>{{ $item->Pat_Pay }}</td>
-
-
-                </tr>
-            @endforeach
-        @elseif(isset($drug_data) && count($drug_data) > 0)
-            @foreach ($drug_data as $item)
-                <tr>
-                    <td>{{ $request->drug_name }}</td>
-                    <td>{{ $item->ndc }}</td>
-                    <td>{{ $item->drug_class }}</td>
-                    <td>{{ $item->form }}</td>
-                    <td>{{ $item->strength }}</td>
-                    <td>{{ $item->mfg }}</td>
-                    <td>{{ $item->acq }}</td>
-                </tr>
-            @endforeach
-        @else
-            <tr>
-                <td colspan="5" class="text-center">No Data Available</td>
-            </tr>
-        @endif
-    </tbody>
-</table>
-
-
-{{--  main one--}
-    <table class="table table-bordered table-striped">
-        <thead class="table-dark">
-            <tr>
-                <th>Drug Name</th>
-                <th>Ins Results</th>
-                <th>NDC Results</th>
-                <th>class </th>
-                @if(($data ))
-                <th>Date </th>
-                <th>Script </th>
-                <th>Net_Profit </th>
-@elseif(isset($drug_data))
-<th>form </th>
-<th>strength </th>
-<th>mfg </th>
-<th>acq </th>
-@else
-@endif
-
-            </tr>
-        </thead>
-        <tbody>
-                <tr>
-                    <!-- Drug Name -->
-                    <td>{{ $request->drug_name }}</td>
-                    <td>{{ $request->insurance }}</td>
-                    <td>{{ $request->ndc }}</td>
-                    <td>{{ $class }}</td>
-                    @if($data)
-                      @foreach ($data as $item)
-                      <td>{{\Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $item->Date)->format('m/d/Y')
-                     }}</td>
-
-                    <td>{{$item->Script }}</td>
-                    <td>{{$item->Net_Profit }}</td>
-
-                    @endforeach
-                    @endif
-
-@if(isset($drug_data))
-@foreach ($drug_data as $item)
-<td>{{$item->form }}</td>
-<td>{{$item->strength }}</td>
-<td>{{$item->mfg }}</td>
-<td>{{$item->acq }}</td>
-
-@endforeach
-@endif
-                </tr>
-            
-        </tbody>
-    </table>
---}}
     
-    <h3>Alternative Drugs in Same Insurance</h3>
-<p>Found {{ $script->count()  }} alternatives in the same class.</p>
+        
+    <!-- Alternatives Section -->
+   
+
+    @if(isset($script) && $script->isNotEmpty())
+        <h3 class="mt-5">Alternative Drugs (With Insurance)</h3>
+        <p>Found {{ $script->count()  }} alternatives in the same class.</p>
 
 <form id="filterForm" method="post" action="{{ route('searchDrug') }}">
     @csrf
@@ -163,172 +167,113 @@
     </select>
 </form>
 
-
-    <table class="table table-bordered table-striped">
-        <thead class="table-dark">
-            <tr>
-                <th>class Name</th>
-                <th>drug Name</th>
-                <th>drug NDC</th>
-                <th>Insurance </th>
-                <th>Script </th>
-                <th>Date </th>
-                <th>RxCui </th>
-                <th>Net_Profit </th>
-                <th>ACQ</th>
-                <th>QTY</th>
-                <th>INS PAY</th>
-                <th>pat_pay</th>
-            </tr>
-        </thead>
-        <tbody>
-            
-                <tr>
-                    <!-- Drug Name -->
-                  
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>Class</th>
+                        <th>Drug Name</th>
+                        <th>NDC</th>
+                        <th>Insurance</th>
+                        <th>Script</th>
+                        <th>Date</th>
+                        <th>RxCUI</th>
+                        <th>Net Profit</th>
+                        <th>ACQ</th>
+                        <th>QTY</th>
+                        <th>Insurance Pay</th>
+                        <th>Patient Pay</th>
+                    </tr>
+                </thead>
+                <tbody>
                     @foreach ($script as $i)
-                  
-                    
-                    <tr>
-                     @if($i->Drug_Name == $request->drug_name && $i->NDC == $request->ndc && $i->Ins == $request->insurance)
-                        
-                        @else
-                    <td>{{ $i->Class }}</td>
-                    <td>{{ $i->Drug_Name }}</td>
-                    <td>{{ $i->NDC }}</td>
-                    <td>{{ $i->Ins}}</td>
-                    <td>{{ $i->Script}}</td>
-                    <td>
-                        {{  \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $i->Date)->format('m/d/Y')}}
-                                   </td>
-                    <td>{{ $i->RxCui}}</td>
-                    <td>{{ $i->Net_profit}}</td>
-                    <td>{{ $i->ACQ }}</td>
-                    <td>{{ $i->Qty }}</td>
-                    <td>{{ $i->Ins_Pay }}</td>
-                    <td>{{ $i->Pat_Pay }}</td>
+                        @if($i->Drug_Name !== $request->drug_name || $i->NDC !== $request->ndc || $i->Ins !== $request->insurance)
+                            <tr>
+                                <td>{{ $i->Class }}</td>
+                                <td>{{ $i->Drug_Name }}</td>
+                                <td style="white-space: nowrap;">
+                                 
 
-                    </tr>
+                                    <a href="https://ndclist.com/ndc/{{ $i->NDC }}" target="_blank">
+                                        {{ $i->NDC }}
+                                    </a>
+                                </td>
+                                
+                                <td>{{ $i->Ins }}</td>
+                                <td>{{ $i->Script }}</td>
+                                <td>{{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $i->Date)->format('m/d/Y') }}</td>
+                                <td>{{ $i->RxCui }}</td>
+                                <td>{{ $i->Net_profit }}</td>
+                                <td>{{ $i->ACQ }}</td>
+                                <td>{{ $i->Qty }}</td>
+                                <td>{{ $i->Ins_Pay }}</td>
+                                <td>{{ $i->Pat_Pay }}</td>
+                            </tr>
                         @endif
                     @endforeach
+                </tbody>
+            </table>
+        </div>
+    @endif
 
-                 
-                    
-                    <!-- Ins Results -->
-             {{--       <td>
-                        @if (isset($data->drug_name) && $data->drug_name->count() > 0)
-                            <ul class="list-unstyled mb-0">
-                                @foreach ($allIns[$drug->drug_name] as $ins)
-                                    <li>{{ $ins->column_name }}</li> <!-- Replace `column_name` with your actual column -->
-                                @endforeach
-                            </ul>
-                        @else
-                            <span class="text-muted">No results found</span>
-                        @endif
-                    </td>
-                    
-                    <!-- NDC Results -->
-                    <td>
-                        @if (isset($allNdc[$drug->drug_name]) && $allNdc[$drug->drug_name]->count() > 0)
-                            <ul class="list-unstyled mb-0">
-                                @foreach ($allNdc[$drug->drug_name] as $ndc)
-                                    <li>{{ $ndc->column_name }}</li> <!-- Replace `column_name` with your actual column -->
-                                @endforeach
-                            </ul>
-                        @else
-                            <span class="text-muted">No results found</span>
-                        @endif
-                    </td>
-                    --}}
-                </tr>
-            
-        </tbody>
-    </table>
-
-    @if(($drugs))
-    <h5>Alternative Drugs with no insurance Data</h5>
-
-    <table class="table table-bordered table-striped">
-        <thead class="table-dark">
-            <tr>
-                <th>class Name</th>
-                <th>drug Name</th>
-                <th>drug NDC</th>
-                <th>form </th>
-                <th>strength </th>
-                <th>awp </th>
-                <th>mfg </th>
-                <th>rxCUI </th>
-                <th>acq </th>
-
-            </tr>
-        </thead>
-        <tbody>
-                <tr>
-                    <!-- Drug Name -->
-                  
+    <!-- Table for Alternatives Without Insurance -->
+    @if(isset($drugs) && $drugs->isNotEmpty())
+        <h3 class="mt-5">Alternative Drugs (Without Insurance)</h3>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>Class Name</th>
+                        <th>Drug Name</th>
+                        <th>NDC</th>
+                        <th>Form</th>
+                        <th>Strength</th>
+                        <th>AWP</th>
+                        <th>Manufacturer</th>
+                        <th>RxCUI</th>
+                        <th>Acquisition Cost</th>
+                    </tr>
+                </thead>
+                <tbody>
                     @foreach ($drugs as $drug)
-                  
-                    
-                    <tr>
-                     @if($drug->drug_name == $request->drug_name && $drug->ndc == $request->ndc )
-                        
-                        @else
-                    <td>{{ $drug->drug_class }}</td>
-                    <td>{{ $drug->drug_name }}</td>
-                    <td>{{ $drug->ndc }}</td>
-                    <td>{{ $drug->form}}</td>
-                    <td>{{ $drug->strength}}</td>
-                    <td>{{ $drug->awp}}</td>
-                    <td>{{ $drug->mfg }}</td>
-                    <td>{{ $drug->rxCUI }}</td>
-                    <td>{{ $drug->acq }}</td>
-
-
-                    </tr>
+                        @if($drug->drug_name !== $request->drug_name || $drug->ndc !== $request->ndc)
+                            <tr>
+                                <td>{{ $drug->drug_class }}</td>
+                                <td>{{ $drug->drug_name }}</td>
+                                <td style="white-space: nowrap;">
+                                    
+                                        @php
+                                            // Remove hyphens from the NDC
+                                            $ndcWithoutHyphens = str_replace('-', '', $drug->ndc); // e.g., 70156-0111-18 -> 70156011118
+                                            $mainNdc = substr($ndcWithoutHyphens, 0, 9); // Extract first 9 digits for the main NDC
+                                            $fullNdc = $ndcWithoutHyphens; // Use the full NDC for the package
+                                        @endphp
+                                        <a 
+                                        href="https://ndclist.com/ndc/{{ $fullNdc }}"
+                                        target="_blank">
+                                            {{ $fullNdc }}
+                                        </a>
+                                    
+                                    
+                                    
+                                </td>
+                                <td>{{ $drug->form }}</td>
+                                <td>{{ $drug->strength }}</td>
+                                <td>{{ $drug->awp }}</td>
+                                <td>{{ $drug->mfg }}</td>
+                                <td>{{ $drug->rxCUI }}</td>
+                                <td>{{ $drug->acq }}</td>
+                            </tr>
                         @endif
                     @endforeach
-
-                 
-                    
-                 
-                </tr>
-            
-        </tbody>
-    </table>
+                </tbody>
+            </table>
+        </div>
     @endif
 </div>
-
-
-
-
-<!--- newwwwwwwwwwwwww    testing        -->
-
-
-{{-- Selected Drug Data --
-
-@if($data->isNotEmpty())
-    <h2>Selected Drug</h2>
-    @foreach($data as $drug)
-        <p>{{ $drug->Drug_Name }} - {{ $drug->Ins }} - {{ $drug->NDC }} ({{ $drug->Date }})</p>
-    @endforeach
-@endif
-
-{{-- Alternatives from Scripts --}
-@if($script->isNotEmpty())
-    <h2>Alternatives (Scripts)</h2>
-    @foreach($script as $alt)
-        <p>{{ $alt->Drug_Name }} - {{ $alt->Ins }} - {{ $alt->NDC }} ({{ $alt->Date }})</p>
-    @endforeach
-@endif
-
-{{-- Alternatives from Drugs --}
-@if($drugs->isNotEmpty())
-    <h2>Alternatives (Drugs)</h2>
-    @foreach($drugs as $drug)
-        <p>{{ $drug->drug_name }} - {{ $drug->drug_class }} - {{ $drug->ndc }}</p>
-    @endforeach
-@endif
---}}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
+
+

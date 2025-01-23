@@ -116,4 +116,8 @@ Route::resource('system', userController::class)->names([
 Route::post('/contact',[ContactController::class,'send'])->name('contact');
 Route::get('/contacts',[ContactController::class,'all'])->name('contacts');
 Route::delete('/contact/{id}',[ContactController::class,'delete'])->name('contact.destroy');
+
+
+//fetch ndc data
+Route::post('/fetch-ndc-data', [pharmacistController::class, 'fetchNdcData'])->name('fetch.ndc.data');
 require __DIR__.'/auth.php';
