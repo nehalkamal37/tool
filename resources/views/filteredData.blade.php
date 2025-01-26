@@ -6,15 +6,37 @@
     <title>Search Results</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css">
 </head>
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+    h2, h3, h5 {
+        color: #343a40;
+    }
+    table th, table td {
+        vertical-align: middle;
+    }
+    .btn-back {
+        margin-bottom: 20px;
+    }
+    .alert-warning {
+        background-color: #fff3cd;
+        border-color: #ffeeba;
+    }
+    .table thead th {
+        background-color: #343a40;
+        color: #fff;
+    }
+</style>
 <body>
 <div class="container mt-5">
     <h2 class="mb-4"></h2>
 
     <form action="{{route('search')}}" method="POST">
         @csrf
-        <input type="hidden" name="drug_name" value="{{$normalizedDrugName}}">
-        <input type="hidden" name="ndc" value="{{$normalizedNDC}}">
-        <input type="hidden" name="insurance" value="{{$normalizedInsurance}}">
+        <input type="hidden" name="drug_name" value="{{$drugname}}">
+        <input type="hidden" name="ndc" value="{{$ndc}}">
+        <input type="hidden" name="insurance" value="{{$ins}}">
     <button type="submit"> Go Back</button>
 
     </form>
@@ -41,7 +63,14 @@
                 <tr>
                     <td>{{ $script->Class }}</td>
                     <td>{{ $script->Drug_Name }}</td>
-                    <td>{{ $script->NDC }}</td>
+                    <td>
+                        <a href="https://ndclist.com/ndc/{{ $script->NDC }}" 
+                           target="_blank" 
+                           class="ndc-link" 
+                           data-ndc="{{ $script->NDC }}">
+                            {{ $script->NDC }}
+                        </a>
+                    </td>
                     <td>{{ $script->Ins }}</td>
                     <td>{{ $script->Script }}</td>
                     <td>
@@ -76,7 +105,21 @@
                 <tr>
                     <td>{{ $script->drug_class }}</td>
                     <td>{{ $script->drug_name }}</td>
-                    <td>{{ $script->ndc }}</td>
+                    <td style="white-space: nowrap;">
+                                    
+                        @php
+                            // Remove hyphens from the NDC
+                            $ndcWithoutHyphens = str_replace('-', '', $script->ndc); // e.g., 70156-0111-18 -> 70156011118
+                            $mainNdc = substr($ndcWithoutHyphens, 0, 9); // Extract first 9 digits for the main NDC
+                            $fullNdc = $ndcWithoutHyphens; // Use the full NDC for the package
+                        @endphp
+                        <a 
+                        href="https://ndclist.com/ndc/{{ $fullNdc }}"
+                        target="_blank">
+                            {{ $fullNdc }}
+                        </a>
+                    
+                </td>
                     <td>{{ $script->form }}</td>
                     <td>{{ $script->awp }}</td>
                     <td>{{ $script->strength }}</td>
@@ -92,7 +135,7 @@
     </table>
     
    
-    <p> {{ $scriptData->count()==1 ? 'No alternatives found for the provided inputs.' :'' }}
+    <p> {{ $scriptData->count()== 0 ? 'No alternatives found for the provided inputs.' :'' }}
         </p>
 
 

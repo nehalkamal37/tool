@@ -29,6 +29,8 @@
     </style>
 </head>
 <body>
+
+
 <div class="container mt-5">
     <h2 class="mb-4 text-center">Search Results</h2>
     @if($data->isEmpty())
@@ -116,8 +118,6 @@
                                     {{ $fullNdc }}
                                 </a>
                             
-                            
-                            
                         </td>
                                                 
                                     
@@ -139,12 +139,27 @@
     </div>
 
 
-    
-        
+<form id="filterForm" method="post" style="width: 573px; margin-left:244px" action="{{ route('search') }}">
+    @csrf
+    <input type="hidden" name="drug_name" value="{{ $request->drug_name }}">
+    <input type="hidden" name="ndc" value="{{ $request->ndc ?? '' }}">
+
+    <label for="ins"><h5>Insurances related to Drug:</h5></label>
+    <select name="insurance" id="ins" class="form-select" 
+    onchange="document.getElementById('filterForm').submit();"  onchange="this.form.submit()">
+        <option value="">-- Select --</option>
+        @foreach ($insurances as $ins)
+            <option value="{{ $ins }}" {{ request('insurance') == $ins ? 'selected' : '' }}>
+                {{ $ins }}
+            </option>
+        @endforeach
+    </select>
+</form>
+
+
     <!-- Alternatives Section -->
    
 
-    @if(isset($script) && $script->isNotEmpty())
         <h3 class="mt-5">Alternative Drugs (With Insurance)</h3>
         <p>Found {{ $script->count()  }} alternatives in the same class.</p>
 
@@ -166,6 +181,7 @@
         
     </select>
 </form>
+@if(isset($script) && $script->isNotEmpty())
 
         <div class="table-responsive">
             <table class="table table-bordered table-hover">
@@ -190,7 +206,18 @@
                         @if($i->Drug_Name !== $request->drug_name || $i->NDC !== $request->ndc || $i->Ins !== $request->insurance)
                             <tr>
                                 <td>{{ $i->Class }}</td>
-                                <td>{{ $i->Drug_Name }}</td>
+                                <td>
+                                    <form action="{{ route('search') }}" method="POST" style="display: inline;">
+                                        @csrf
+                                        <input type="hidden" name="drug_name" value="{{ $i->Drug_Name }}">
+                                        <input type="hidden" name="ndc" value="{{ $i->NDC }}">
+                                        <input type="hidden" name="insurance" value="{{ $i->Ins }}">
+                                        <button type="submit" style="all: unset; cursor: pointer; color: inherit; text-decoration: underline;">
+                                            {{ $i->Drug_Name }}
+                                        </button>
+                                    </form>
+                                </td>
+                                
                                 <td style="white-space: nowrap;">
                                  
 
@@ -238,8 +265,22 @@
                     @foreach ($drugs as $drug)
                         @if($drug->drug_name !== $request->drug_name || $drug->ndc !== $request->ndc)
                             <tr>
-                                <td>{{ $drug->drug_class }}</td>
-                                <td>{{ $drug->drug_name }}</td>
+                               
+                              
+                                
+                                <td>{{ $drug->drug_class }}</td>                              
+                                <td>
+                                    <form action="{{ route('search') }}" method="POST" style="display: inline;">
+                                        @csrf
+                                        <input type="hidden" name="drug_name" value="{{ $drug->drug_name }}">
+                                        <input type="hidden" name="ndc" value="{{ $drug->ndc }}">
+                                        <button type="submit" style="all: unset; cursor: pointer; color: inherit; text-decoration: underline;">
+                                            {{ $drug->drug_name }}
+                                        </button>
+                                    </form>
+                                </td>
+                                
+                              
                                 <td style="white-space: nowrap;">
                                     
                                         @php

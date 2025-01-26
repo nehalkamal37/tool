@@ -129,7 +129,10 @@ public function searchDrug(Request $request)
     $normalizedDrugName = trim($request->input('drug_name'));
     $normalizedNDC = str_replace('-', '', trim($request->input('ndc')));
     $normalizedInsurance = trim($request->input('insurance'));
-
+  
+    $drugname=$request->drug_name;
+    $ndc=$request->ndc;
+    $ins=$request->insurance;
    
     $class = Script::where('Drug_Name', $request->drug_name)
               ->where('Ins', $request->insurance)
@@ -180,10 +183,13 @@ $dclass=Drug::where('drug_name', $request->drug_name)
     return view('filteredData', [
         'scriptData'=>$scriptQuery,
         //'scriptData' => $scriptData,
-        'normalizedDrugName' => $normalizedDrugName,
-        'normalizedNDC' => $normalizedNDC,
-        'normalizedInsurance' => $normalizedInsurance,
+        'normalizedDrugName' => $normalizedDrugName ?? $drugname,
+        'normalizedNDC' => $normalizedNDC ,
+        'normalizedInsurance' => $normalizedInsurance ?? $ins, 
         'sortBy' => $request->input('sort_by'),
+        'ndc'=>$ndc,
+        'ins'=>$ins,
+        'drugname'=>$drugname,
     ]);
 }
 
@@ -220,7 +226,11 @@ public function search(Request $request)
     ->distinct()
     ->get();
 
-   
+   //insurances related to the chosen drug
+    $insurances = Script::where('Drug_Name', $request->drug_name)
+    ->distinct()
+    ->pluck('Ins')
+    ->all();
 
         return view('drugResult', [
             'data' => collect(),
@@ -229,6 +239,7 @@ public function search(Request $request)
             'script' => collect(),
             'class' => $class2,
             'drugs' => (trim($class2) == 'Other' || trim($class2) == 'Other NDC') ? collect() : $alternativesFromDrugs,
+             'insurances' => $insurances,
         ]);
     }
 
@@ -266,7 +277,7 @@ public function search(Request $request)
         $alternativesFromScripts = Script::where('Class', $class)
             ->where('Ins', $request->insurance)
             ->where('NDC', '!=', $normalizedNDC)
-            ->where('Drug_Name', '!=', $request->drug_name)  
+           // ->where('Drug_Name', '!=', $request->drug_name)  
          // ->select('Drug_Name', 'Ins', 'NDC', 'Date', 'Class', 'Net_profit', 'RxCUI') // Exclude 'id' or other columns you don't care about
             ->distinct()
             ->get()
@@ -282,13 +293,20 @@ public function search(Request $request)
             ->distinct()
             ->get();
 
+
+             //insurances related to the chosen drug
+    $insurances = Script::where('Drug_Name', $request->drug_name)
+    ->distinct()
+    ->pluck('Ins')
+    ->all();
+
             return view('drugResult', [
             'data' => $dataFromScripts,
             'request' => $request,
             'script' => (trim($class) == 'Other' || trim($class) == 'Other NDC') ? collect() : $alternativesFromScripts,
             'class' => $class,
             'drugs' => (trim($class2) == 'Other' || trim($class2) == 'Other NDC' || trim($class) == 'Other') ? collect() : $alternativesFromDrugs,
-        ]);
+            'insurances' => $insurances,]);
     }
 
     // If NDC is provided
@@ -343,9 +361,16 @@ public function search(Request $request)
     ->get();
 
        $drugData = Drug::where('drug_name', $request->drug_name)
-        ->orWhere('ndc', $normalizedNDC)
+        ->Where('ndc', $request->ndc)
+        ->select('drug_class', 'drug_name', 'ndc', 'form', 'strength','rxCUI', 'acq','awp', 'mfg', 'rxcui') // Exclude 'id' or other columns you don't care about
         ->distinct()
         ->get();
+
+         //insurances related to the chosen drug
+    $insurances = Script::where('Drug_Name', $request->drug_name)
+    ->distinct()
+    ->pluck('Ins')
+    ->all();
 
     return view('drugResult', [
         'data' => $selectedDrugData,
@@ -354,6 +379,7 @@ public function search(Request $request)
         'script' => (trim($class) == 'Other' || trim($class) == 'Other NDC') ? collect() : $alternativesFromScripts,
         'class' => $class,
         'drugs' => (trim($class2) == 'Other' || trim($class2) == 'Other NDC' || trim($class) == 'Other' ) ? collect() : $alternativesFromDrugs,
+  'insurances' => $insurances,
     ]);
 }
 
