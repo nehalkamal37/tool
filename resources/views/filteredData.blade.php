@@ -4,32 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search Results</title>
+    <link rel="stylesheet"  href="{{ asset('searchBar/css/styleee.css') }}">
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css">
+
 </head>
-<style>
-    body {
-        background-color: #f8f9fa;
-    }
-    h2, h3, h5 {
-        color: #343a40;
-    }
-    table th, table td {
-        vertical-align: middle;
-    }
-    .btn-back {
-        margin-bottom: 20px;
-    }
-    .alert-warning {
-        background-color: #fff3cd;
-        border-color: #ffeeba;
-    }
-    .table thead th {
-        background-color: #343a40;
-        color: #fff;
-    }
-</style>
+
 <body>
-<div class="container mt-5">
+<div class="container mt-2">
     <h2 class="mb-4"></h2>
 
     <form action="{{route('search')}}" method="POST">
@@ -44,7 +26,9 @@
     <h3>Alternative Drugs due to {{ $sortBy }}    </h3>
     <p>Found {{ $scriptData->count() }} .</p>
 
-    <table class="table table-striped">
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped" style="max-width: 100%; margin: auto;">
+                
         <thead>
             @if($sortBy === 'net_profit_desc')
             <tr>
@@ -84,9 +68,11 @@
             @endif
         </tbody>
     </table>
+        </div>
     
-    <table class="table table-striped">
-        <thead>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped" style="max-width: 100%; margin: auto;">
+                       <thead>
             @if($sortBy == 'awp_asc')
             <tr>
                 <th>Class Name</th>
@@ -133,6 +119,7 @@
             @endif
         </tbody>
     </table>
+        </div>
     
    
     <p> {{ $scriptData->count()== 0 ? 'No alternatives found for the provided inputs.' :'' }}

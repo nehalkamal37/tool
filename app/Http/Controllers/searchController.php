@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Drug;
 use App\Models\Script;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class searchController extends Controller
 {
@@ -251,7 +252,8 @@ public function search(Request $request)
             ->distinct()
             ->get()
             ->groupBy(function ($item) {
-                return $item['Drug_Name'] . '-' . $item['Ins'] . '-' . $item['NDC'];
+                return $item['Drug_Name'] . '-' . $item['Ins'] ;
+                //. '-' . $item['NDC'];
             })
             ->map(function ($group) {
                 return $group->sortByDesc(function ($item) {
@@ -276,9 +278,9 @@ public function search(Request $request)
 
         $alternativesFromScripts = Script::where('Class', $class)
             ->where('Ins', $request->insurance)
-            ->where('NDC', '!=', $normalizedNDC)
-           // ->where('Drug_Name', '!=', $request->drug_name)  
-         // ->select('Drug_Name', 'Ins', 'NDC', 'Date', 'Class', 'Net_profit', 'RxCUI') // Exclude 'id' or other columns you don't care about
+             ->where('Drug_Name', '!=', $request->drug_name)  
+            ->select('Drug_Name', 'Ins', 'NDC', 'Date', 'Class', 'Net_profit', 'RxCUI','Script','Ins_Pay'
+            ,'Pat_Pay','Qty','ACQ') // Exclude 'id' or other columns you don't care about
             ->distinct()
             ->get()
             ->groupBy(function ($item) {
@@ -288,17 +290,49 @@ public function search(Request $request)
                 return $group->sortByDesc('Date')->first();
             });
 
+
             $alternativesFromDrugs = Drug::where('drug_class', $class2)
             ->select('drug_class', 'drug_name', 'ndc', 'form', 'strength', 'rxCUI','acq','awp', 'mfg') // Exclude 'id' or other columns you don't care about
             ->distinct()
             ->get();
 
-
+         // dd($alternativesFromScripts->toArray([0]));
              //insurances related to the chosen drug
     $insurances = Script::where('Drug_Name', $request->drug_name)
     ->distinct()
     ->pluck('Ins')
     ->all();
+
+    //new   try teqh
+
+   
+// Get all Date values
+$dates = $dataFromScripts->map(function ($item) {
+    return $item->Date;
+});
+
+// Get the most recent Date
+$mostRecentDate = $dataFromScripts->max(function ($item) {
+    return strtotime($item->Date);
+});
+
+
+$filteredScripts = Script::where('Class', $class)
+    ->where('Ins', $request->insurance)
+   // ->where('Drug_Name', '!=', $request->drug_name) // Exclude the current drug name
+    ->where('Date', '<', $mostRecentDate) // Get records with dates less than the reference date
+    ->orderBy('Date', 'desc') // Sort by date in descending order
+    ->distinct()
+    ->get()
+    ->groupBy(function ($item) {
+        return $item['Drug_Name'] . '-' . $item['Ins'];
+    })
+    ->map(function ($group) {
+        return $group->sortByDesc('Date')->first(); // Get the most recent record per group
+    });
+
+   // dd($referenceDate,$dataFromScripts, $filteredScripts);
+    //end of try
 
             return view('drugResult', [
             'data' => $dataFromScripts,
@@ -346,6 +380,8 @@ public function search(Request $request)
         ->where('Ins', $request->insurance)
         ->where('NDC', '!=', $normalizedNDC)
         ->where('Drug_Name', '!=', $request->drug_name)
+        ->select('Drug_Name', 'Ins', 'NDC', 'Date', 'Class', 'Net_profit', 'RxCUI','Script','Ins_Pay'
+        ,'Pat_Pay','Qty','ACQ') 
         ->distinct()
         ->get()
         ->groupBy(function ($item) {
@@ -382,6 +418,7 @@ public function search(Request $request)
   'insurances' => $insurances,
     ]);
 }
+
 
 
 

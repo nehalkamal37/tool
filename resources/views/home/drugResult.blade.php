@@ -1,43 +1,62 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="{{ asset('searchresult/fonts/icomoon/style.css')}}">
+    <link rel="stylesheet" href="{{ asset('drugresult/fonts/icomoon/style.css')}}">
 
-    <link rel="stylesheet" href="{{ asset('searchresult/css/owl.carousel.min.css')}}">
-    <link rel="stylesheet"  href="{{ asset('searchBar/css/styleee.css') }}">
+    <link rel="stylesheet" href="{{ asset('drugresult/css/owl.carousel.min.css')}}">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="{{ asset('searchresult/css/bootstrap.min.css')}}">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
     
     <!-- Style -->
-    <link rel="stylesheet" href="{{ asset('searchresult/css/style.css')}}">
+    <link rel="stylesheet" href="css/style.css">
 
-    <title>Search Result</title>
-  </head>
-  <body>
-  
+    <title>Search Results</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        h2, h3, h5 {
+            color: #343a40;
+        }
+        table th, table td {
+            vertical-align: middle;
+        }
+        .btn-back {
+            margin-bottom: 20px;
+        }
+        .alert-warning {
+            background-color: #fff3cd;
+            border-color: #ffeeba;
+        }
+        .table thead th {
+            background-color: #343a40;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
 
 
-  <!-- my data -->
-  
-  <div class="container mt-4" style="margin-bottom: px;">
-    <h1 class="mb-0 text-center" >Search Results for "{{$request->drug_name}}"</h1>
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">Search Results</h2>
+    @if($data->isEmpty())
+        <div class="alert alert-warning text-center" role="alert">
+            No insurance data available for <strong>{{ $request->drug_name }}</strong> with NDC <strong>{{ $request->ndc }}</strong>.
+        </div>
+    @endif
+    <a href="{{ route('searchPage') }}" class="btn btn-secondary btn-back">Go Back</a>
+    
     <!-- Table for Main Search Results -->
-
-    <div class="content">
-        <a href="{{ route('searchPage')}}" class="btn btn-light">Go Back</a>
-
-        <div class="container">
-    
-          <div class="table-responsive">
-    
-            <table class="table custom-table">
-              <thead>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead class="table-dark">
                 <tr>
                     @if($data && count($data) > 0)
                         <th>Drug Name</th>
@@ -70,16 +89,7 @@
                     @foreach ($data as $item)
                         <tr>
         
-                            <td>
-                                <form action="{{ route('search') }}" method="POST" style="display: inline;">
-                                    @csrf
-                                    <input type="hidden" name="drug_name" value="{{ $request->drug_name }}">
-                                    <input type="hidden" name="ndc" value="{{ $request->ndc }}">
-                                    <button type="submit" style="all: unset; cursor: pointer; color: inherit; text-decoration: underline;">
-                                        {{ $request->drug_name }}
-                                    </button>
-                                </form>
-                            </td>
+                            <td>{{ $request->drug_name }}</td>
                             <td>{{ $request->insurance }}</td>
                             <td>
                                 <a href="https://ndclist.com/ndc/{{ $item->NDC }}" 
@@ -141,17 +151,16 @@
             </tbody>
         </table>
     </div>
-        </div>
-    
-<form id="filterForm2" method="post" style="width: 573px; margin-left:244px" action="{{ route('search') }}">
+
+
+<form id="filterForm" method="post" style="width: 573px; margin-left:244px" action="{{ route('search') }}">
     @csrf
     <input type="hidden" name="drug_name" value="{{ $request->drug_name }}">
     <input type="hidden" name="ndc" value="{{ $request->ndc ?? '' }}">
 
     <label for="ins"><h5>Insurances related to Drug:</h5></label>
-    <select  name="insurance" id="ins" class="form-select" 
-    onchange="document.getElementById('filterForm2').submit();"
-      onchange="this.form.submit()">
+    <select name="insurance" id="ins" class="form-select" 
+    onchange="document.getElementById('filterForm').submit();"  onchange="this.form.submit()">
         <option value="">-- Select --</option>
         @foreach ($insurances as $ins)
             <option value="{{ $ins }}" {{ request('insurance') == $ins ? 'selected' : '' }}>
@@ -161,100 +170,37 @@
     </select>
 </form>
 
-    <style>
-            
-            #filterForm2 { 
-            margin-top: 20px;
-            margin-left: 20px;
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            max-width: 600px;
-            width: 100%;
-          /*  background: white;*/
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-           /* padding: 20px 30px;  */
-            max-width: 600px;
-            width: 100%;
-        }
-        #filterForm  { 
-            margin-top: 20px;
-            margin-left: 20px;
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            max-width: 600px;
-            width: 100%;
-          /*  background: white;*/
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-           /* padding: 20px 30px;  */
-            max-width: 600px;
-            width: 100%;
-        }
-        #filterForm h5 {
-            font-size: 1.2rem;
-            margin-bottom: 1px;
-            color: #333;
-        }
-        #filterForm select {
-            border-radius: 5px;
-            padding: 10px;
-            font-size: 1rem;
-            border: 1px solid #ddd;
-            width: 100%;
-            margin-bottom: 20px;
-            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-        #filterForm select:focus {
-            border-color: #007bff;
-            outline: none;
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-        }
-    </style>
-
-
 
     <!-- Alternatives Section -->
    
 
+        <h3 class="mt-5">Alternative Drugs (With Insurance)</h3>
+        <p>Found {{ $script->count()  }} alternatives in the same class.</p>
 
+<form id="filterForm" method="post" action="{{ route('searchDrug') }}">
+    @csrf
+    <input type="hidden" name="drug_name" value="{{ $request->drug_name }}">
+    <input type="hidden" name="ndc" value="{{ $request->ndc }}">
+    <input type="hidden" name="insurance" value="{{ $request->insurance }}">
 
-<div class="content">
-    
-    
-    <h3 class="mt-5">Alternative Drugs (With Insurance)</h3>
-    <p>Found {{ $script->count()  }} alternatives in the same class.</p>
-    <form id="filterForm" method="post" action="{{ route('searchDrug') }}">
-        @csrf
-        <input type="hidden" name="drug_name" value="{{ $request->drug_name }}">
-        <input type="hidden" name="ndc" value="{{ $request->ndc }}">
-        <input type="hidden" name="insurance" value="{{ $request->insurance }}">
-    
-        <label for="sort_by">Sort Alternatives By:</label>
-        <select name="sort_by" id="sort_by" class="form-select" onchange="this.form.submit()">
-            <option value="">-- Select --</option>
-            <option value="net_profit_desc" {{ request('sort_by') === 'net_profit_desc' ? 'selected' : '' }}>
-                Highest Net Profit
-            </option>
-           <option value="awp_asc" {{ request('sort_by') === 'awp_asc' ? 'selected' : '' }}>
-                Lowest AWP
-            </option>
-            
-        </select>
-    </form>
-    @if(isset($script) && $script->isNotEmpty())
+    <label for="sort_by">Sort Alternatives By:</label>
+    <select name="sort_by" id="sort_by" class="form-select" onchange="this.form.submit()">
+        <option value="">-- Select --</option>
+        <option value="net_profit_desc" {{ request('sort_by') === 'net_profit_desc' ? 'selected' : '' }}>
+            Highest Net Profit
+        </option>
+       <option value="awp_asc" {{ request('sort_by') === 'awp_asc' ? 'selected' : '' }}>
+            Lowest AWP
+        </option>
+        
+    </select>
+</form>
+@if(isset($script) && $script->isNotEmpty())
 
-    <div class="container">
-
-      <div class="table-responsive">
-
-        <table class="table custom-table">
-          <thead>
-            <tr>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
                         <th>Class</th>
                         <th>Drug Name</th>
                         <th>NDC</th>
@@ -269,7 +215,6 @@
                         <th>Patient Pay</th>
                     </tr>
                 </thead>
-
                 <tbody>
                     @foreach ($script as $i)
                         @if($i->Drug_Name !== $request->drug_name || $i->NDC !== $request->ndc || $i->Ins !== $request->insurance)
@@ -308,22 +253,16 @@
                         @endif
                     @endforeach
                 </tbody>
-
             </table>
         </div>
     @endif
 
     <!-- Table for Alternatives Without Insurance -->
     @if(isset($drugs) && $drugs->isNotEmpty())
-        <div class="content">
-            <h3 class="mt-5">Alternative Drugs (Without Insurance)</h3>
-
-            <div class="container">
-        
-              <div class="table-responsive">
-        
-                <table class="table custom-table">
-                  <thead>
+        <h3 class="mt-5">Alternative Drugs (Without Insurance)</h3>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead>
                     <tr>
                         <th>Class Name</th>
                         <th>Drug Name</th>
@@ -343,7 +282,7 @@
                                
                               
                                 
-                                <td style="font-size: 1rem">{{ $drug->drug_class }}</td>                              
+                                <td>{{ $drug->drug_class }}</td>                              
                                 <td>
                                     <form action="{{ route('search') }}" method="POST" style="display: inline;">
                                         @csrf
@@ -388,11 +327,8 @@
     @endif
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
-
-
-    <script src="js/jquery-3.3.1.min.js"></script>
-    <script src="js/popper.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/main.js"></script>
-  </body>
+</body>
 </html>
+
+
+

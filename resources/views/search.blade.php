@@ -6,13 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Drug Search</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css">
-
+    <link rel="stylesheet"  href="{{ asset('searchBar/css/styleee.css') }}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <link  href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -122,107 +122,7 @@ $(document).ready(function () {
     });
 });
 </script>
-<!--
-<script>
-    $(document).ready(function () {
-        // Initialize Select2 for drugName
-        $('#drugName').select2({
-            placeholder: "-- Select Drug Name --",
-            allowClear: true
-        });
 
-        // Mapping for insurance short names to full names
-        const insuranceMapping = {
-            'AL': 'Aetna (AL)',
-            'BW': 'Aetna (BW)',
-            'AD': 'Aetna Medicare (AD)',
-            'AF': 'Anthem BCBS (AF)',
-            'DS': 'Blue Cross Blue Shield (DS)',
-            'CA': 'Blue Shield Medicare (CA)',
-            'FQ': 'Capital Rx (FQ)',
-            'BF': 'Caremark (BF)',
-            'ED': 'CatalystRx (ED)',
-            'AM': 'Cigna (AM)',
-            'BO': 'Default Claim Format (BO)',
-            'AP': 'Envision Rx Options (AP)',
-            'CG': 'Express Scripts (CG)',
-            'BI': 'Horizon (BI)',
-            'AJ': 'Humana Medicare (AJ)',
-            'BP': 'informedRx (BP)',
-            'AO': 'MEDCO HEALTH (AO)',
-            'AC': 'MEDCO MEDICARE PART D (AC)',
-            'AQ': 'MEDGR (AQ)',
-            'CC': 'MY HEALTH LA (CC)',
-            'AG': 'Navitus Health Solutions (AG)',
-            'AH': 'OptumRx (AH)',
-            'AS': 'PACIFICARE LIFE AND H (AS)',
-            'FJ': 'Paramount Rx (FJ)',
-            'X ': 'PF - DEFAULT (X )',
-            'EA': 'Pharmacy Data Management (EA)',
-            'DW': 'PHCS (DW)',
-            'AX': 'PINNACLE (AX)',
-            'BN': 'Prescription Solutions (BN)',
-            'AA': 'Tri-Care Express Scripts (AA)',
-            'AI': 'United Healthcare (AI)'
-        };
-
-        // Function to dynamically update dropdown options
-        function updateOptions(selector, options, mapping = null) {
-            let element = $(selector);
-            element.empty();
-            element.append('<option value="">-- Select --</option>');
-
-            options.forEach(function (option) {
-                // Use mapping if provided
-                let displayText = mapping && mapping[option] ? mapping[option] : option;
-                element.append('<option value="' + option + '">' + displayText + '</option>');
-            });
-
-            // Reinitialize Select2 if applied
-            if (element.hasClass('select2')) {
-                element.trigger('change.select2');
-            }
-
-            console.log(`Updated ${selector} with options:`, options); // Debug updated options
-        }
-
-        // Event handler for drug name change
-        $('#drugName').on('change', function () {
-            let drugName = $(this).val();
-            console.log('Selected Drug Name:', drugName);
-
-            if (drugName) {
-                $.ajax({
-                    url: '/filter-data',
-                    method: 'POST',
-                    data: {
-                        _token: '{{ csrf_token() }}',
-                        drug_name: drugName,
-                    },
-                    success: function (response) {
-                        console.log('Response:', response);
-
-                        if (response.insurances && response.ndcs) {
-                            $('#relatedInputs').show();
-                        } else {
-                            $('#relatedInputs').hide();
-                        }
-
-                        // Update dropdowns with the fetched data
-                        updateOptions('#insurance', response.insurances, insuranceMapping); // Use mapping for insurances
-                        updateOptions('#ndc', response.ndcs); // No mapping for NDCs
-                    },
-                    error: function (error) {
-                        console.error('AJAX Error:', error);
-                    }
-                });
-            } else {
-                $('#relatedInputs').hide();
-            }
-        });
-    });
-</script>
--->
 
 
 

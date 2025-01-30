@@ -22,6 +22,7 @@
         <link href="{{asset('searchPage/css/main.css')}}" rel="stylesheet" />
       
 </head>
+@auth
 @if(auth()->user()->role == 'pharmacist')
 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: ">
     @csrf
@@ -33,6 +34,10 @@
 @else
 <a href="{{route('dash')}}" class="btn btn-secondary w-10">Dashboard</a>
 @endif
+@endauth
+@guest
+<a href="{{route('login')}}" class="btn btn-secondary w-10">Login</a>    
+@endguest
 <style>
     body {
         display: flex;
@@ -91,15 +96,9 @@
 
         <button type="submit" class="btn btn-primary w-100">Search Drug</button>
     </form>
-    <script>
-     /*   $(document).ready(function() {
-            $('.select2').select2({
-                placeholder: "-- Select Drug Name --",
-                allowClear: true
-            });
-        });
-        */
-    </script>
+<!-- to allow pasting drug name  -->
+
+
     <!-- to Display NDCs price -->
 
         
@@ -123,98 +122,10 @@ $(document).ready(function () {
     });
 });
 </script>
-<!--   just shit  --
 
-<script>
-    $(document).ready(function () {
-        $('.select2').select2({
-                placeholder: "-- Select Drug Name --",
-                allowClear: true
-            });
-        // Mapping for insurance short names to full names
-        const insuranceMapping = {
-            'AL': 'Aetna (AL)',
-            'BW': 'Aetna (BW)',
-            'AD': 'Aetna Medicare (AD)',
-            'AF': 'Anthem BCBS (AF)',
-            'DS': 'Blue Cross Blue Shield (DS)',
-            'CA': 'Blue Shield Medicare (CA)',
-            'FQ': 'Capital Rx (FQ)',
-            'BF': 'Caremark (BF)',
-            'ED': 'CatalystRx (ED)',
-            'AM': 'Cigna (AM)',
-            'BO': 'Default Claim Format (BO)',
-            'AP': 'Envision Rx Options (AP)',
-            'CG': 'Express Scripts (CG)',
-            'BI': 'Horizon (BI)',
-            'AJ': 'Humana Medicare (AJ)',
-            'BP': 'informedRx (BP)',
-            'AO': 'MEDCO HEALTH (AO)',
-            'AC': 'MEDCO MEDICARE PART D (AC)',
-            'AQ': 'MEDGR (AQ)',
-            'CC': 'MY HEALTH LA (CC)',
-            'AG': 'Navitus Health Solutions (AG)',
-            'AH': 'OptumRx (AH)',
-            'AS': 'PACIFICARE LIFE AND H (AS)',
-            'FJ': 'Paramount Rx (FJ)',
-            'X ': 'PF - DEFAULT (X )',
-            'EA': 'Pharmacy Data Management (EA)',
-            'DW': 'PHCS (DW)',
-            'AX': 'PINNACLE (AX)',
-            'BN': 'Prescription Solutions (BN)',
-            'AA': 'Tri-Care Express Scripts (AA)',
-            'AI': 'United Healthcare (AI)'
-        };
 
-        function updateOptions(selector, options, mapping = null) {
-            let element = $(selector);
-            element.empty();
-            element.append('<option value="">-- Select --</option>');
 
-            options.forEach(function (option) {
-                // Use mapping if provided
-                let displayText = mapping && mapping[option] ? mapping[option] : option;
-                element.append('<option value="' + option + '">' + displayText + '</option>');
-            });
-            console.log(`Updated ${selector} with options:`, options); // Debug updated options
-        }
 
-        $('#drugName').on('change', function () {
-            let drugName = $(this).val();
-            console.log('Selected Drug Name:', drugName);
-
-            if (drugName) {
-                $.ajax({
-                    url: '/filter-data',
-                    method: 'POST',
-                    data: {
-                        _token: '{{ csrf_token() }}',
-                        drug_name: drugName,
-                    },
-                    success: function (response) {
-                        console.log('Response:', response);
-
-                        if (response.insurances && response.ndcs) {
-                            $('#relatedInputs').show();
-                        } else {
-                            $('#relatedInputs').hide();
-                        }
-
-                        // Update dropdowns with the fetched data
-                        updateOptions('#insurance', response.insurances, insuranceMapping); // Use mapping for insurances
-                        updateOptions('#ndc', response.ndcs); // No mapping for NDCs
-                    },
-                    error: function (error) {
-                        console.error('AJAX Error:', error);
-                    }
-                });
-            } else {
-                $('#relatedInputs').hide();
-            }
-        });
-    });
-</script>
--->
 <script>
     $(document).ready(function () {
         // Initialize Select2 for drugName
@@ -279,8 +190,7 @@ $(document).ready(function () {
         }
 
         // Event handler for drug name change
-        $('#drugName').on('change', function () {
-            let drugName = $(this).val();
+        function handleDrugChange(drugName) {
             console.log('Selected Drug Name:', drugName);
 
             if (drugName) {
@@ -311,6 +221,20 @@ $(document).ready(function () {
             } else {
                 $('#relatedInputs').hide();
             }
+        }
+
+        // Handle change and paste events
+        $('#drugName').on('change', function () {
+            handleDrugChange($(this).val());
+        });
+
+        $('#drugName').on('paste', function (e) {
+            const inputElement = $(this);
+
+            setTimeout(function () {
+                const pastedValue = inputElement.val();
+                handleDrugChange(pastedValue); // Process pasted value after it's in the input
+            }, 100); // Small delay to ensure the value is available
         });
     });
 </script>
