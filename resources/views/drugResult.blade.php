@@ -1,3 +1,7 @@
+
+
+
+
 <!doctype html>
 <html lang="en">
   <head>
@@ -143,7 +147,7 @@
     </div>
         </div>
     
-<form id="filterForm2" method="post" style="width: 573px; margin-left:244px" action="{{ route('search') }}">
+<form id="filterForm2" method="post"  action="{{ route('search') }}">
     @csrf
     <input type="hidden" name="drug_name" value="{{ $request->drug_name }}">
     <input type="hidden" name="ndc" value="{{ $request->ndc ?? '' }}">

@@ -307,6 +307,7 @@ public function search(Request $request)
 
    
 // Get all Date values
+if($dataFromScripts){
 $dates = $dataFromScripts->map(function ($item) {
     return $item->Date;
 });
@@ -315,7 +316,7 @@ $dates = $dataFromScripts->map(function ($item) {
 $mostRecentDate = $dataFromScripts->max(function ($item) {
     return strtotime($item->Date);
 });
-
+}
 
 $filteredScripts = Script::where('Class', $class)
     ->where('Ins', $request->insurance)
@@ -376,20 +377,24 @@ $filteredScripts = Script::where('Class', $class)
         ->pluck('drug_class')
         ->first();
 
+
+
+
     $alternativesFromScripts = Script::where('Class', $class)
         ->where('Ins', $request->insurance)
-        ->where('NDC', '!=', $normalizedNDC)
-        ->where('Drug_Name', '!=', $request->drug_name)
+         ->where('NDC', '!=', $normalizedNDC)
+       //  ->where('Drug_Name', '!=', $request->drug_name)
         ->select('Drug_Name', 'Ins', 'NDC', 'Date', 'Class', 'Net_profit', 'RxCUI','Script','Ins_Pay'
-        ,'Pat_Pay','Qty','ACQ') 
-        ->distinct()
-        ->get()
+       ,'Pat_Pay','Qty','ACQ') 
+       ->distinct()
+       ->get()
         ->groupBy(function ($item) {
-            return $item['Drug_Name'] . '-' . $item['Ins'] . '-' . $item['NDC'];
+            return $item['Drug_Name'] . '-' . $item['Ins']. '-' . $item['NDC'];
         })
         ->map(function ($group) {
             return $group->sortByDesc('Date')->first();
         });
+
 
     $alternativesFromDrugs = Drug::where('drug_class', $class2)
     ->select('drug_class', 'drug_name', 'ndc', 'form', 'strength','rxCUI', 'acq','awp', 'mfg', 'rxcui') // Exclude 'id' or other columns you don't care about
